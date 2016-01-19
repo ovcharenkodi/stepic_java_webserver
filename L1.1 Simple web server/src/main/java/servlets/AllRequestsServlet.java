@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author v.chibrikov
@@ -21,15 +22,20 @@ public class AllRequestsServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
-
         Map<String, Object> pageVariables = createPageVariablesMap(request);
-        pageVariables.put("message", "");
 
-        response.getWriter().println(PageGenerator.instance().getPage("page.html", pageVariables));
+        if (request.getPathInfo().equals("/mirror")) {
+            Map<String, String[]> map = request.getParameterMap();
+            Object keyFirst = map.keySet().toArray()[0];
+            Object value = map.get(keyFirst)[0];
+            response.getWriter().println(value);
 
+        } else {
+            pageVariables.put("message", "");
+            response.getWriter().println(PageGenerator.instance().getPage("page.html", pageVariables));
+        }
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-
     }
 
     public void doPost(HttpServletRequest request,
